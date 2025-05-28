@@ -1,0 +1,67 @@
+{# templates/home/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}OnlyBrands - Premium Products{% endblock %}
+
+{% block body %}
+    <!-- Hero Section -->
+    <section class="hero-section py-5">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-12">
+                    <h1>Welcome to OnlyBrands</h1>
+                    <p>Discover premium products from trusted brands</p>
+                    <a href="{{ path('product_index') }}" class="btn btn-primary">Shop Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Our Categories</h2>
+            <div class="row">
+                {% for category in categories %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5>{{ category.name }}</h5>
+                                <p>{{ category.products|length }} products</p>
+                                <a href="{{ path('product_index', {'category': category.id}) }}" class="btn btn-outline-primary">View</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="featured-products-section py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-4">Featured Products</h2>
+            <div class="row">
+                {% for product in featuredProducts %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card">
+                            {% if product.image %}
+                                <img src="{{ asset('uploads/products/' ~ product.image) }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/300" class="card-img-top" alt="{{ product.name }}">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">{{ product.price|number_format(3) }} TND</p>
+                                <a href="{{ path('product_show', {'id': product.id}) }}" class="btn btn-primary">View Details</a>
+                                <form action="{{ path('cart_add', {'id': product.id}) }}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-secondary">Add to Cart</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
