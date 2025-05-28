@@ -1,15 +1,26 @@
-# config/routes.yaml
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
 home:
     path: /
     controller: App\Controller\HomeController::index
+
+# Product routes
 product_index:
     path: /products
     controller: App\Controller\ProductController::index
-product_index_category:
-    path: /products/{category}
-    controller: App\Controller\ProductController::index
-    defaults: { category: null }
+
 product_show:
     path: /products/{id}
     controller: App\Controller\ProductController::show
-    requirements: { id: '\d+' }
+    requirements:
+        id: '\d+'
+
+# Cart routes
+cart_index:
+    path: /cart
+    controller: App\Controller\CartController::index
+
