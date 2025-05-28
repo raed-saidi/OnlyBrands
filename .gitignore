@@ -1,28 +1,33 @@
-# Symfony Framework Bundle
+### Symfony ###
 /.env
-/.env.local
-/.env.local.php
-/.env.*.local
 /.env.*
+!.env.dist  # Keep template if needed
+/.env.local.php
 /config/secrets/
-/config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
 /vendor/
 
-# PHPUnit
+### Composer ###
+/composer.lock
+#/composer.json
+### Docker/Symfony ###
+/compose.yaml
+/symfony.lock
+
+### PHPUnit ###
 /phpunit.xml
+/phpunit.xml.dist
 /.phpunit.result.cache
 
-# Symfony PHPUnit Bridge
-/.phpunit.result.cache
-/phpunit.xml
-
-# Symfony Asset Mapper
+### Asset Mapper ###
 /public/assets/
 /assets/vendor/
 
-# Configuration files
+### ImportMap ###
+/importmap.php
+
+### Config Files ###
 /config/*.yaml
 /config/*.yml
 /config/*.php
@@ -31,5 +36,3 @@
 /config/services.yaml
 /config/bundles.php
 /config/preload.php
-/config/routes.yaml
-/config/routes.yml
