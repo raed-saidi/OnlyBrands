@@ -24,3 +24,88 @@ cart_index:
     path: /cart
     controller: App\Controller\CartController::index
 
+cart_add:
+    path: /cart/add/{id}
+    controller: App\Controller\CartController::add
+    requirements:
+        id: '\d+'
+
+cart_update:
+    path: /cart/update/{id}
+    controller: App\Controller\CartController::update
+    requirements:
+        id: '\d+'
+
+cart_remove:
+    path: /cart/remove/{id}
+    controller: App\Controller\CartController::remove
+    requirements:
+        id: '\d+'
+
+cart_clear:
+    path: /cart/clear
+    controller: App\Controller\CartController::clear
+
+# Coupon routes
+coupon_apply:
+    path: /coupon/apply
+    controller: App\Controller\CouponController::apply
+    methods: [POST]
+
+coupon_remove:
+    path: /coupon/remove
+    controller: App\Controller\CouponController::remove
+    methods: [POST]
+
+# Checkout routes
+checkout:
+    path: /checkout
+    controller: App\Controller\CheckoutController::index
+
+checkout_complete:
+    path: /checkout/complete
+    controller: App\Controller\CheckoutController::complete
+    methods: [POST]
+
+checkout_success:
+    path: /checkout/success
+    controller: App\Controller\CheckoutController::success
+
+# Profile routes
+app_profile:
+    path: /profile
+    controller: App\Controller\ProfileController::index
+
+app_profile_edit:
+    path: /profile/edit
+    controller: App\Controller\ProfileController::edit
+
+app_profile_orders:
+    path: /profile/orders
+    controller: App\Controller\ProfileController::orders
+
+app_profile_settings:
+    path: /profile/settings
+    controller: App\Controller\ProfileController::settings
+
+# Authentication routes
+app_login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+app_logout:
+    path: /logout
+    controller: App\Controller\SecurityController::logout
+
+app_register:
+    path: /register
+    controller: App\Controller\RegistrationController::register
+
+# Google OAuth routes
+connect_google_start:
+    path: /connect/google
+    controller: App\Controller\GoogleController::connectAction
+
+connect_google_check:
+    path: /connect/google/check
+    controller: App\Controller\GoogleController::connectCheckAction
