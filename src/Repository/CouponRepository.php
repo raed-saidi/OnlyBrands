@@ -15,19 +15,32 @@ class CouponRepository extends ServiceEntityRepository
 
     public function findValidCouponByCode(string $code): ?Coupon
     {
-        $qb = $this->createQueryBuilder('c');
+        $now = new \DateTime();
         
-        return $qb->where('c.code = :code')
-            ->andWhere('c.isActive = true')
+        return $this->createQueryBuilder('c')
+            ->where('c.code = :code')
+            ->andWhere('c.isActive = :active')
+            ->andWhere('(c.validFrom IS NULL OR c.validFrom <= :now)')
+            ->andWhere('(c.validTo IS NULL OR c.validTo >= :now)')
+            ->andWhere('(c.usageLimit IS NULL OR c.usageCount < c.usageLimit)')
             ->setParameter('code', $code)
+            ->setParameter('active', true)
+            ->setParameter('now', $now)
             ->getQuery()
             ->getOneOrNullResult();
     }
 
     public function findActiveCoupons(): array
     {
+        $now = new \DateTime();
+        
         return $this->createQueryBuilder('c')
-            ->where('c.isActive = true')
+            ->where('c.isActive = :active')
+            ->andWhere('(c.validFrom IS NULL OR c.validFrom <= :now)')
+            ->andWhere('(c.validTo IS NULL OR c.validTo >= :now)')
+            ->andWhere('(c.usageLimit IS NULL OR c.usageCount < c.usageLimit)')
+            ->setParameter('active', true)
+            ->setParameter('now', $now)
             ->orderBy('c.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
