@@ -43,6 +43,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: "user")]
     private Collection $orders;
 
+    #[ORM\Column(type: "boolean", options: ["default" => false])]
+    private bool $isGoogleUser = false;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -178,6 +181,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $order->setUser(null);
             }
         }
+        return $this;
+    }
+
+    public function isGoogleUser(): bool
+    {
+        return $this->isGoogleUser;
+    }
+
+    public function setIsGoogleUser(bool $isGoogleUser): self
+    {
+        $this->isGoogleUser = $isGoogleUser;
         return $this;
     }
 

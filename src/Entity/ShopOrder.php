@@ -2,44 +2,46 @@
 
 namespace App\Entity;
 
+use App\Repository\OrderRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-#[ORM\Entity]
-class Order
+#[ORM\Entity(repositoryClass: OrderRepository::class)]
+#[ORM\Table(name: 'orders')]
+class ShopOrder
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'orders')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private float $total;
-
-    #[ORM\Column(type: 'string', length: 50)]
-    private string $status;
-
-    #[ORM\Column(type: 'text')]
-    private string $shippingAddress;
-
-    #[ORM\Column(type: 'text')]
-    private string $billingAddress;
-
     #[ORM\Column(type: 'datetime')]
-    private \DateTimeInterface $createdAt;
+    private ?\DateTime $createdAt = null;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $status = null;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    private ?float $total = null;
+
+    #[ORM\Column(type: 'text')]
+    private ?string $shippingAddress = null;
+
+    #[ORM\Column(type: 'text')]
+    private ?string $billingAddress = null;
 
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order', cascade: ['persist', 'remove'])]
     private Collection $items;
 
     public function __construct()
     {
-        $this->items = new ArrayCollection();
         $this->createdAt = new \DateTime();
+        $this->items = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -58,18 +60,18 @@ class Order
         return $this;
     }
 
-    public function getTotal(): float
+    public function getCreatedAt(): ?\DateTime
     {
-        return $this->total;
+        return $this->createdAt;
     }
 
-    public function setTotal(float $total): self
+    public function setCreatedAt(\DateTime $createdAt): self
     {
-        $this->total = $total;
+        $this->createdAt = $createdAt;
         return $this;
     }
 
-    public function getStatus(): string
+    public function getStatus(): ?string
     {
         return $this->status;
     }
@@ -80,7 +82,18 @@ class Order
         return $this;
     }
 
-    public function getShippingAddress(): string
+    public function getTotal(): ?float
+    {
+        return $this->total;
+    }
+
+    public function setTotal(float $total): self
+    {
+        $this->total = $total;
+        return $this;
+    }
+
+    public function getShippingAddress(): ?string
     {
         return $this->shippingAddress;
     }
@@ -91,7 +104,7 @@ class Order
         return $this;
     }
 
-    public function getBillingAddress(): string
+    public function getBillingAddress(): ?string
     {
         return $this->billingAddress;
     }
@@ -102,20 +115,7 @@ class Order
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    /**
-     * @return Collection|OrderItem[]
-     */
+    /** @return Collection<int, OrderItem> */
     public function getItems(): Collection
     {
         return $this->items;

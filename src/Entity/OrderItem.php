@@ -2,47 +2,44 @@
 
 namespace App\Entity;
 
-use App\Repository\OrderItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: OrderItemRepository::class)]
+#[ORM\Entity]
+#[ORM\Table(name: "order_item")]
 class OrderItem
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'items')]
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Order $orderRef = null;
+    private ?Order $order = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Product::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
-    #[ORM\Column]
-    private ?int $quantity = null;
-
-    #[ORM\Column]
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 3)]
     private ?float $price = null;
 
-    #[ORM\Column]
-    private ?float $total = null;
+    #[ORM\Column(type: 'integer')]
+    private ?int $quantity = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getOrderRef(): ?Order
+    public function getOrder(): ?Order
     {
-        return $this->orderRef;
+        return $this->order;
     }
 
-    public function setOrderRef(?Order $orderRef): static
+    public function setOrder(?Order $order): self
     {
-        $this->orderRef = $orderRef;
+        $this->order = $order;
         return $this;
     }
 
@@ -51,20 +48,9 @@ class OrderItem
         return $this->product;
     }
 
-    public function setProduct(?Product $product): static
+    public function setProduct(?Product $product): self
     {
         $this->product = $product;
-        return $this;
-    }
-
-    public function getQuantity(): ?int
-    {
-        return $this->quantity;
-    }
-
-    public function setQuantity(int $quantity): static
-    {
-        $this->quantity = $quantity;
         return $this;
     }
 
@@ -73,20 +59,25 @@ class OrderItem
         return $this->price;
     }
 
-    public function setPrice(float $price): static
+    public function setPrice(float $price): self
     {
         $this->price = $price;
         return $this;
     }
 
-    public function getTotal(): ?float
+    public function getQuantity(): ?int
     {
-        return $this->total;
+        return $this->quantity;
     }
 
-    public function setTotal(float $total): static
+    public function setQuantity(int $quantity): self
     {
-        $this->total = $total;
+        $this->quantity = $quantity;
         return $this;
+    }
+
+    public function getTotal(): float
+    {
+        return $this->price * $this->quantity;
     }
 }

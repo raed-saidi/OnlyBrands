@@ -25,8 +25,11 @@ class Product
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 3)]
     private ?float $price = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $image = null;
+    #[ORM\Column(type: Types::BLOB, nullable: true)]
+    private $image = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $imageMimeType = null;
 
     #[ORM\Column]
     private ?int $stock = null;
@@ -85,14 +88,25 @@ class Product
         return $this;
     }
 
-    public function getImage(): ?string
+    public function getImage()
     {
         return $this->image;
     }
 
-    public function setImage(?string $image): self
+    public function setImage($image): self
     {
         $this->image = $image;
+        return $this;
+    }
+
+    public function getImageMimeType(): ?string
+    {
+        return $this->imageMimeType;
+    }
+
+    public function setImageMimeType(?string $imageMimeType): self
+    {
+        $this->imageMimeType = $imageMimeType;
         return $this;
     }
 
