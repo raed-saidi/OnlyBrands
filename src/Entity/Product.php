@@ -23,7 +23,7 @@ class Product
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 3)]
-    private ?float $price = null;
+    private ?string $price = null;
 
     #[ORM\Column(type: Types::BLOB, nullable: true)]
     private $image = null;
@@ -79,12 +79,12 @@ class Product
 
     public function getPrice(): ?float
     {
-        return $this->price;
+        return $this->price !== null ? (float)$this->price : null;
     }
 
     public function setPrice(float $price): self
     {
-        $this->price = $price;
+        $this->price = (string)$price;
         return $this;
     }
 

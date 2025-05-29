@@ -27,7 +27,7 @@ class ShopOrder
     private ?string $status = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private ?float $total = null;
+    private ?string $total = null;
 
     #[ORM\Column(type: 'text')]
     private ?string $shippingAddress = null;
@@ -84,7 +84,7 @@ class ShopOrder
 
     public function getTotal(): ?float
     {
-        return $this->total;
+        return $this->total !== null ? (float)$this->total : null;
     }
 
     public function setTotal(float $total): self

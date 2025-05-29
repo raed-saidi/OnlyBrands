@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity]
 #[ORM\Table(name: "order_item")]
@@ -17,12 +18,12 @@ class OrderItem
     #[ORM\JoinColumn(nullable: false)]
     private ?Order $order = null;
 
-    #[ORM\ManyToOne(targetEntity: Product::class)]
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'orderItems')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 3)]
-    private ?float $price = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 3)]
+    private ?string $price = null;
 
     #[ORM\Column(type: 'integer')]
     private ?int $quantity = null;
@@ -56,12 +57,12 @@ class OrderItem
 
     public function getPrice(): ?float
     {
-        return $this->price;
+        return $this->price !== null ? (float)$this->price : null;
     }
 
     public function setPrice(float $price): self
     {
-        $this->price = $price;
+        $this->price = (string)$price;
         return $this;
     }
 
@@ -78,6 +79,6 @@ class OrderItem
 
     public function getTotal(): float
     {
-        return $this->price * $this->quantity;
+        return (float)$this->price * $this->quantity;
     }
 }

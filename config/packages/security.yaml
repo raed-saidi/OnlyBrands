@@ -26,6 +26,9 @@ security:
                 secret: '%kernel.secret%'
                 lifetime: 604800  # 1 week
                 path: /
+            # Uncomment if using a custom authenticator
+            # custom_authenticators:
+            #     - App\Security\LoginFormAuthenticator
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }

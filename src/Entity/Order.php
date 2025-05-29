@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity]
 class Order
@@ -14,12 +15,12 @@ class Order
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'orders')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private float $total;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $total = null;
 
     #[ORM\Column(type: 'string', length: 50)]
     private string $status;
@@ -60,12 +61,12 @@ class Order
 
     public function getTotal(): float
     {
-        return $this->total;
+        return (float)$this->total;
     }
 
     public function setTotal(float $total): self
     {
-        $this->total = $total;
+        $this->total = (string)$total;
         return $this;
     }
 

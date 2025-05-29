@@ -1,15 +1,15 @@
 doctrine:
     dbal:
-        connections:
-            default:
-                logging: true
-                url: '%env(resolve:DATABASE_URL)%'
-                driver: 'pdo_mysql'
-                server_version: '8.0' # Adjust to your MySQL version (e.g., 5.7)
-                charset: utf8mb4
-                default_table_options:
-                    charset: utf8mb4
-                    collate: utf8mb4_unicode_ci
+      connections:
+        default:
+          logging: true
+          url: '%env(resolve:DATABASE_URL)%'
+          driver: 'pdo_mysql'
+          server_version: '8.0' # Adjust to your MySQL version (e.g., 5.7)
+          charset: utf8mb4
+          default_table_options:
+              charset: utf8mb4
+              collate: utf8mb4_unicode_ci
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
