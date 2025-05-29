@@ -16,7 +16,6 @@ class OrderController extends AbstractController
     #[Route('/{id}', name: 'app_order_show')]
     public function show(Order $order, EntityManagerInterface $entityManager): Response
     {
-        // Ensure the order belongs to the current user
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
         if ($order->getUser()->getId() !== $user->getId()) {
@@ -25,6 +24,7 @@ class OrderController extends AbstractController
 
         return $this->render('profile/order_show.html.twig', [
             'order' => $order,
+            'user' => $user,
         ]);
     }
 }
