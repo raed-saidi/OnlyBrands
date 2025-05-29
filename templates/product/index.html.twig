@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Products{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Products</h1>
+
+        {% if products is defined and products|length > 0 %}
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            {% if product.image %}
+                                <img src="{{ path('product_image', {'id': product.id}) }}" alt="{{ product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <img src="https://via.placeholder.com/300x200?text={{ product.name|url_encode }}" alt="No image available" class="card-img-top" style="height: 200px; object-fit: cover;">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">
+                                    {% if product.description|length > 100 %}
+                                        {{ product.description|slice(0, 100) }}...
+                                    {% else %}
+                                        {{ product.description }}
+                                    {% endif %}
+                                </p>
+                                <p class="card-text"><strong>{{ product.price|number_format(3) }} TND</strong></p>
+                                <p class="card-text"><small class="text-muted">Stock: {{ product.stock }}</small></p>
+                                {% if product.category %}
+                                    <span class="badge bg-primary">{{ product.category.name }}</span>
+                                {% endif %}
+                                <div class="mt-3">
+                                    <a href="{{ path('product_show', {'id': product.id}) }}" class="btn btn-primary btn-sm">
+                                        View Details
+                                    </a>
+                                    <form method="post" action="{{ path('cart_add', {'id': product.id}) }}" style="display:inline-block;">
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <input type="hidden" name="_token" value="{{ csrf_token('add-to-cart-' ~ product.id) }}">
+                                        <button type="submit" class="btn btn-success btn-sm ms-2">
+                                            Add to Cart
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <h4>No products found</h4>
+                <p>No products are available at the moment.</p>
+                <a href="{{ path('home') }}" class="btn btn-primary">Go to Home</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

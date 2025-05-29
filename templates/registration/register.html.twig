@@ -1,0 +1,147 @@
+{# templates/registration/register.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="glass-card animate-slideUp">
+                    <div class="text-center mb-4">
+                        <h1 class="mb-3">Create an Account</h1>
+                        <p class="text-light-gray">Join us and experience the future of shopping</p>
+                    </div>
+
+                    {{ form_start(registrationForm) }}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(registrationForm.firstName, null, {'label_attr': {'class': 'form-label'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark-gray border-0">
+                                    <i class="fas fa-user text-light-gray"></i>
+                                </span>
+                                {{ form_widget(registrationForm.firstName, {'attr': {'class': 'form-control', 'placeholder': 'First Name'}}) }}
+                            </div>
+                            <div class="form-text text-danger">
+                                {{ form_errors(registrationForm.firstName) }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(registrationForm.lastName, null, {'label_attr': {'class': 'form-label'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark-gray border-0">
+                                    <i class="fas fa-user text-light-gray"></i>
+                                </span>
+                                {{ form_widget(registrationForm.lastName, {'attr': {'class': 'form-control', 'placeholder': 'Last Name'}}) }}
+                            </div>
+                            <div class="form-text text-danger">
+                                {{ form_errors(registrationForm.lastName) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.email, null, {'label_attr': {'class': 'form-label'}}) }}
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark-gray border-0">
+                                <i class="fas fa-envelope text-light-gray"></i>
+                            </span>
+                            {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'Email Address'}}) }}
+                        </div>
+                        <div class="form-text text-danger">
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.plainPassword.first, 'Password', {'label_attr': {'class': 'form-label'}}) }}
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark-gray border-0">
+                                <i class="fas fa-lock text-light-gray"></i>
+                            </span>
+                            {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control', 'placeholder': 'Password'}}) }}
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="first">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-text text-danger">
+                            {{ form_errors(registrationForm.plainPassword.first) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.plainPassword.second, 'Confirm Password', {'label_attr': {'class': 'form-label'}}) }}
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark-gray border-0">
+                                <i class="fas fa-lock text-light-gray"></i>
+                            </span>
+                            {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control', 'placeholder': 'Confirm Password'}}) }}
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="second">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-text text-danger">
+                            {{ form_errors(registrationForm.plainPassword.second) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(registrationForm.agreeTerms, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        <div class="form-text text-danger">
+                            {{ form_errors(registrationForm.agreeTerms) }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-gradient w-100 mb-3">Register</button>
+
+                    <div class="text-center">
+                        <p class="text-light-gray mb-3">Or register with</p>
+                        <div class="d-flex justify-content-center gap-2 mb-4">
+                            <a href="{{ path('connect_google') }}" class="btn btn-outline-danger">
+                                <i class="fab fa-google"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-primary">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-info">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+
+                        <p class="mb-0">Already have an account? <a href="{{ path('app_login') }}" class="animated-link">Login here</a></p>
+                    </div>
+                    {{ form_end(registrationForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle password visibility
+            const toggleButtons = document.querySelectorAll('.toggle-password');
+
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.dataset.target;
+                    const passwordInput = document.querySelector(`#registration_form_plainPassword_${target}`);
+
+                    if (passwordInput) {
+                        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                        passwordInput.setAttribute('type', type);
+
+                        // Toggle icon
+                        const icon = this.querySelector('i');
+                        icon.classList.toggle('fa-eye');
+                        icon.classList.toggle('fa-eye-slash');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
