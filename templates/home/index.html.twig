@@ -82,7 +82,7 @@
             {% if categories is defined and categories|length > 0 %}
                 {% for category in categories %}
                     {% set iconMap = {
-                        'Electronics': 'fas fa-laptop',
+                        'Sport': 'fas fa-laptop',
                         'Fashion': 'fas fa-tshirt',
                         'Home': 'fas fa-home',
                         'Sports': 'fas fa-dumbbell',
@@ -106,7 +106,7 @@
             {% else %}
                 <!-- Catégories par défaut si aucune n'est trouvée -->
                 {% set defaultCategories = [
-                    {'name': 'Electronics', 'icon': 'fas fa-laptop', 'count': '150+'},
+                    {'name': 'Sport', 'icon': 'fas fa-laptop', 'count': '150+'},
                     {'name': 'Fashion', 'icon': 'fas fa-tshirt', 'count': '200+'},
                     {'name': 'Home & Garden', 'icon': 'fas fa-home', 'count': '120+'},
                     {'name': 'Sports', 'icon': 'fas fa-dumbbell', 'count': '80+'}
@@ -151,7 +151,7 @@
                         <div class="product-card">
                             <div class="product-img-container">
                                 {% if product.image %}
-                                    <img src="{{ asset('uploads/products/' ~ product.image) }}" class="product-img" alt="{{ product.name }}">
+                                    <img src="{{ path('product_image', {id: product.id}) }}" class="product-img" alt="{{ product.name }}">
                                 {% else %}
                                     <img src="https://via.placeholder.com/300x300?text={{ product.name|slice(0, 10) }}" class="product-img" alt="{{ product.name }}">
                                 {% endif %}

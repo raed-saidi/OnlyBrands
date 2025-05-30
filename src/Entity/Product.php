@@ -28,9 +28,6 @@ class Product
     #[ORM\Column(type: Types::BLOB, nullable: true)]
     private $image = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $imageMimeType = null;
-
     #[ORM\Column]
     private ?int $stock = null;
 
@@ -96,17 +93,6 @@ class Product
     public function setImage($image): self
     {
         $this->image = $image;
-        return $this;
-    }
-
-    public function getImageMimeType(): ?string
-    {
-        return $this->imageMimeType;
-    }
-
-    public function setImageMimeType(?string $imageMimeType): self
-    {
-        $this->imageMimeType = $imageMimeType;
         return $this;
     }
 
