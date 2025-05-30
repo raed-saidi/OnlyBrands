@@ -53,7 +53,7 @@
                 <div class="col-lg-6">
                     <div class="hero-visual animate-slideInRight">
                         <div class="floating-card">
-                            <img src="https://via.placeholder.com/600x400?text=Premium+Products" alt="Premium Products" class="img-fluid rounded-3">
+                           
                             <div class="floating-badge">
                                 <i class="fas fa-star text-warning"></i>
                                 <span>Premium Quality</span>
@@ -81,15 +81,6 @@
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
             {% if categories is defined and categories|length > 0 %}
                 {% for category in categories %}
-                    {% set iconMap = {
-                        'Sport': 'fas fa-laptop',
-                        'Fashion': 'fas fa-tshirt',
-                        'Home': 'fas fa-home',
-                        'Sports': 'fas fa-dumbbell',
-                        'Beauty': 'fas fa-spa',
-                        'Books': 'fas fa-book'
-                    } %}
-                    
                     <div class="col reveal reveal-hidden" style="transition-delay: {{ loop.index0 * 0.1 }}s">
                         <a href="{{ path('product_index', {'category': category.id}) }}" class="category-card">
                             <div class="category-icon">
@@ -104,7 +95,6 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <!-- Catégories par défaut si aucune n'est trouvée -->
                 {% set defaultCategories = [
                     {'name': 'Sport', 'icon': 'fas fa-laptop', 'count': '150+'},
                     {'name': 'Fashion', 'icon': 'fas fa-tshirt', 'count': '200+'},
@@ -134,72 +124,78 @@
 
     <!-- Featured Products Section -->
     <section class="featured-products-section py-5">
-        <div class="container">
-            <div class="section-header d-flex justify-content-between align-items-center mb-5 reveal reveal-hidden">
-                <div>
-                    <h2 class="section-title mb-0">Featured Products</h2>
-                    <p class="section-subtitle mb-0">Handpicked items just for you</p>
-                </div>
-                <a href="{{ path('product_index') }}" class="btn btn-outline">
-                    View All <i class="fas fa-arrow-right ms-2"></i>
-                </a>
+    <div class="container">
+        <div class="section-header d-flex justify-content-between align-items-center mb-5 reveal reveal-hidden">
+            <div>
+                <h2 class="section-title mb-0">Featured Products</h2>
+                <p class="section-subtitle mb-0">Handpicked items just for you</p>
             </div>
+            <a href="{{ path('product_index') }}" class="btn btn-outline">
+                View All <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                {% for product in featuredProducts %}
-                    <div class="col reveal reveal-hidden" style="transition-delay: {{ loop.index0 * 0.1 }}s">
-                        <div class="product-card">
-                            <div class="product-img-container">
-                                {% if product.image %}
-                                    <img src="{{ path('product_image', {id: product.id}) }}" class="product-img" alt="{{ product.name }}">
-                                {% else %}
-                                    <img src="https://via.placeholder.com/300x300?text={{ product.name|slice(0, 10) }}" class="product-img" alt="{{ product.name }}">
-                                {% endif %}
-                                <div class="product-overlay">
-                                    <a href="{{ path('product_show', {'id': product.id}) }}" class="btn btn-primary">
-                                        <i class="fas fa-eye me-2"></i> Quick View
-                                    </a>
-                                </div>
-                                {% if product.averageRating >= 4.5 %}
-                                    <div class="product-badge">
-                                        <i class="fas fa-crown"></i> Premium
-                                    </div>
-                                {% endif %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for product in featuredProducts %}
+                <div class="col reveal reveal-hidden" style="transition-delay: {{ loop.index0 * 0.1 }}s">
+                    <div class="product-card h-100 d-flex flex-column">
+                        <div class="product-img-container" style="height: 200px; display: flex; align-items: center; justify-content: center; background:rgb(255, 255, 255);">
+                            {% if product.image %}
+                                <img src="{{ path('product_image', {id: product.id}) }}" 
+                                     class="product-img img-fluid" 
+                                     alt="{{ product.name }}"
+                                     style="max-height: 100%; max-width: 100%; object-fit: contain; width: auto; height: auto;">
+                            {% else %}
+                                <img src="https://via.placeholder.com/300x300?text={{ product.name|slice(0, 10) }}" 
+                                     class="product-img img-fluid" 
+                                     alt="{{ product.name }}"
+                                     style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                            {% endif %}
+                            <div class="product-overlay">
+                                <a href="{{ path('product_show', {'id': product.id}) }}" class="btn btn-primary">
+                                    <i class="fas fa-eye me-2"></i> Quick View
+                                </a>
                             </div>
-                            <div class="product-body">
-                                <h5 class="product-title">{{ product.name }}</h5>
-                                <p class="product-price">{{ product.price|number_format(3) }} TND</p>
-                                <p class="product-description">{{ product.description|slice(0, 80) }}...</p>
-
-                                {% if product.averageRating %}
-                                    <div class="product-rating">
-                                        {% for i in 1..5 %}
-                                            {% if i <= product.averageRating|round(0, 'floor') %}
-                                                <i class="fas fa-star"></i>
-                                            {% elseif i <= product.averageRating|round(0, 'ceil') and product.averageRating|round(1) % 1 > 0 %}
-                                                <i class="fas fa-star-half-alt"></i>
-                                            {% else %}
-                                                <i class="far fa-star"></i>
-                                            {% endif %}
-                                        {% endfor %}
-                                        <span class="ms-2">({{ product.reviews|length }})</span>
-                                    </div>
-                                {% endif %}
-
-                                <div class="product-footer">
-                                    <form action="{{ path('cart_add', {'id': product.id}) }}" method="post" class="add-to-cart-form">
-                                        <button type="submit" class="btn btn-primary add-to-cart-btn">
-                                            <i class="fas fa-cart-plus"></i>
-                                        </button>
-                                    </form>
+                            {% if product.averageRating >= 4.5 %}
+                                <div class="product-badge">
+                                    <i class="fas fa-crown"></i> Premium
                                 </div>
+                            {% endif %}
+                        </div>
+                        <div class="product-body flex-grow-1 d-flex flex-column">
+                            <h5 class="product-title">{{ product.name }}</h5>
+                            <p class="product-price">{{ product.price|number_format(3) }} TND</p>
+                            <p class="product-description flex-grow-1">{{ product.description|slice(0, 80) }}...</p>
+
+                            {% if product.averageRating %}
+                                <div class="product-rating mb-2">
+                                    {% for i in 1..5 %}
+                                        {% if i <= product.averageRating|round(0, 'floor') %}
+                                            <i class="fas fa-star"></i>
+                                        {% elseif i <= product.averageRating|round(0, 'ceil') and product.averageRating|round(1) % 1 > 0 %}
+                                            <i class="fas fa-star-half-alt"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="ms-2">({{ product.reviews|length }})</span>
+                                </div>
+                            {% endif %}
+
+                            <div class="product-footer mt-auto">
+                                <form action="{{ path('cart_add', {'id': product.id}) }}" method="post" class="add-to-cart-form">
+                                    <button type="submit" class="btn btn-primary add-to-cart-btn w-100">
+                                        <i class="fas fa-cart-plus me-2"></i> Add to Cart
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- Features Section -->
     <section class="features-section py-5">
@@ -260,111 +256,4 @@
         </div>
     </section>
 
-{% endblock %}
-
-{% block javascripts %}
-     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-
-            // Add to cart animation
-            document.querySelectorAll('.add-to-cart-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    const button = this.querySelector('.add-to-cart-btn');
-                    const icon = button.querySelector('i');
-
-                    // Add loading state
-                    button.disabled = true;
-                    icon.className = 'fas fa-spinner fa-spin';
-
-                    // Reset after form submission
-                    setTimeout(() => {
-                        button.disabled = false;
-                        icon.className = 'fas fa-check';
-
-                        setTimeout(() => {
-                            icon.className = 'fas fa-cart-plus';
-                        }, 1000);
-                    }, 500);
-                });
-            });
-
-            // Newsletter form
-            document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const button = this.querySelector('button');
-                const originalText = button.innerHTML;
-
-                button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Subscribing...';
-                button.disabled = true;
-
-                setTimeout(() => {
-                    button.innerHTML = '<i class="fas fa-check me-2"></i> Subscribed!';
-
-                    setTimeout(() => {
-                        button.innerHTML = originalText;
-                        button.disabled = false;
-                        this.reset();
-                    }, 2000);
-                }, 1000);
-            });
-
-            // Brands slider animation
-            const brandsTrack = document.querySelector('.brands-track');
-            if (brandsTrack) {
-                let scrollAmount = 0;
-                const scrollSpeed = 1;
-
-                function scrollBrands() {
-                    scrollAmount += scrollSpeed;
-                    if (scrollAmount >= brandsTrack.scrollWidth / 2) {
-                        scrollAmount = 0;
-                    }
-                    brandsTrack.style.transform = `translateX(-${scrollAmount}px)`;
-                    requestAnimationFrame(scrollBrands);
-                }
-
-                scrollBrands();
-            }
-        });
-        // Ajoutez ce code pour débugger
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded');
-    
-    // Vérifiez si vos éléments existent
-    const categorySection = document.querySelector('.category-section');
-    const categoryCards = document.querySelectorAll('.category-card');
-    
-    console.log('Section trouvée:', categorySection);
-    console.log('Nombre de cartes:', categoryCards.length);
-    
-    // Si aucune carte n'est trouvée, ajoutez-les dynamiquement
-    if (categoryCards.length === 0) {
-        addCategories();
-    }
-});
-
-function addCategories() {
-    const categories = [
-        { name: 'Electronics', icon: 'fas fa-laptop', count: '150+' },
-        { name: 'Fashion', icon: 'fas fa-tshirt', count: '200+' },
-        { name: 'Home & Garden', icon: 'fas fa-home', count: '120+' }
-    ];
-    
-    // Créer et insérer les catégories
-    // ... logique pour créer les éléments
-}
-    </script>
 {% endblock %}
