@@ -298,6 +298,7 @@ a {
     }
 }
 
+
 .white{
     color : white;
 }
@@ -306,4 +307,38 @@ a {
 }
 .rad {
     border:  1px solid white;
+}
+
+.product-img-container {
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid #eee;
+}
+    
+.product-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+}
+    
+.product-img-container:hover .product-overlay {
+        opacity: 1;
+}
+    
+.product-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: gold;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 12px;
 }

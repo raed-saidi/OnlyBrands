@@ -66,4 +66,22 @@ class ProductController extends AbstractController
             'product' => $product,
         ]);
     }
+     #[Route('/product/image/{id}', name: 'product_image')]
+    public function productImage(ProductRepository $productRepository, int $id): Response
+    {
+        $product = $productRepository->find($id);
+
+        if (!$product || !$product->getImage()) {
+            throw $this->createNotFoundException('Image not found.');
+        }
+
+        // Récupérer le contenu binaire du LONGBLOB
+        $imageData = stream_get_contents($product->getImage());
+
+        return new Response($imageData, 200, [
+            'Content-Type' => 'image/jpeg',  // adapte ce type selon tes images (png, gif...)
+            'Content-Disposition' => 'inline; filename="product.jpg"',
+        ]);
+    }
+
 }
