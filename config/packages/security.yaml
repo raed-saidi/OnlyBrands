@@ -19,6 +19,8 @@ security:
                 check_path: app_login
                 enable_csrf: true
                 default_target_path: product_index
+                username_parameter: _username
+                password_parameter: _password
             logout:
                 path: app_logout
                 target: product_index
