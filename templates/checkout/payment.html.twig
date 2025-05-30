@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Payment{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4"><i class="fas fa-credit-card me-2"></i>Payment for Order #{{ order.id }}</h1>
+
+        <div class="checkout-steps mb-4">
+            <div class="step completed">
+                <span>1</span>
+                <span class="step-label">Cart</span>
+            </div>
+            <div class="step active">
+                <span>2</span>
+                <span class="step-label">Checkout</span>
+            </div>
+            <div class="step">
+                <span>3</span>
+                <span class="step-label">Confirmation</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5>Amount: {{ order.total|number_format(3) }} TND</h5>
+                <form id="payment-form">
+                    <div id="card-element" class="form-control mb-3"></div>
+                    <div id="card-errors" role="alert" class="text-danger mb-3"></div>
+                    <button id="submit-payment" class="btn btn-primary">Pay Now</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('{{ stripePublicKey }}');
+        const elements = stripe.elements();
+        const cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+
+        const form = document.getElementById('payment-form');
+        const cardErrors = document.getElementById('card-errors');
+        const submitButton = document.getElementById('submit-payment');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            submitButton.disabled = true;
+
+            const { paymentIntent, error } = await stripe.confirmCardPayment('{{ clientSecret }}', {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: '{{ order.billingAddress }}',
+                    },
+                },
+            });
+
+            if (error) {
+                cardErrors.textContent = error.message;
+                submitButton.disabled = false;
+            } else if (paymentIntent.status === 'succeeded') {
+                // Redirect to success page
+                window.location.href = '{{ path('checkout_success', {'id': order.id}) }}';
+            }
+        });
+    </script>
+{% endblock %}

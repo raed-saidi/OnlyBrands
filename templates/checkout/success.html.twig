@@ -1,225 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Checkout{% endblock %}
+{% block title %}Order Confirmation{% endblock %}
 
 {% block body %}
     <div class="container mt-5">
-        <h1 class="mb-4"><i class="fas fa-credit-card me-2"></i>Checkout</h1>
+        <h1 class="mb-4"><i class="fas fa-check-circle me-2"></i>Order Confirmed</h1>
 
         <div class="checkout-steps mb-4">
             <div class="step completed">
                 <span>1</span>
                 <span class="step-label">Cart</span>
             </div>
-            <div class="step active">
+            <div class="step completed">
                 <span>2</span>
                 <span class="step-label">Checkout</span>
             </div>
-            <div class="step">
+            <div class="step active">
                 <span>3</span>
                 <span class="step-label">Confirmation</span>
             </div>
         </div>
 
-        {% for message in app.flashes('error') %}
-            <div class="alert alert-danger">{{ message }}</div>
-        {% endfor %}
-
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Shipping & Billing Information</h5>
-                    </div>
-                    <div class="card-body">
-                        {{ form_start(form, {'attr': {'id': 'checkout-form'}}) }}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6>Shipping Address</h6>
-                                <div class="mb-3">
-                                    {{ form_label(form.shippingAddress, 'Shipping Address', {'label_attr': {'class': 'form-label'}}) }}
-                                    {{ form_widget(form.shippingAddress, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Enter your complete shipping address'}}) }}
-                                    {{ form_errors(form.shippingAddress) }}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6>Billing Address</h6>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="sameAsShipping" checked>
-                                    <label class="form-check-label" for="sameAsShipping">Same as shipping address</label>
-                                </div>
-                                <div id="billingFields">
-                                    <div class="mb-3">
-                                        {{ form_label(form.billingAddress, 'Billing Address', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.billingAddress, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Enter your complete billing address'}}) }}
-                                        {{ form_errors(form.billingAddress) }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h6 class="mt-4">Payment Method</h6>
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input type="radio" class="form-check-input" id="paymentCredit" name="payment_method" value="credit" required checked>
-                                <label class="form-check-label" for="paymentCredit">Credit Card</label>
-                            </div>
-                            <div class="form-check">
-                                <input type="radio" class="form-check-input" id="paymentPaypal" name="payment_method" value="paypal">
-                                <label class="form-check-label" for="paymentPaypal">PayPal</label>
-                            </div>
-                        </div>
-                        <div id="creditCardFields">
-                            <div class="mb-3">
-                                <label for="cardName" class="form-label">Name on Card</label>
-                                <input type="text" class="form-control" id="cardName" name="card_name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="cardNumber" class="form-label">Card Number</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="cardNumber" name="card_number" placeholder="XXXX XXXX XXXX XXXX" required>
-                                    <span class="input-group-text">
-                                    <i class="fab fa-cc-visa me-1"></i>
-                                    <i class="fab fa-cc-mastercard me-1"></i>
-                                    <i class="fab fa-cc-amex"></i>
-                                </span>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="cardExpiry" class="form-label">Expiration Date</label>
-                                    <input type="text" class="form-control" id="cardExpiry" name="card_expiry" placeholder="MM/YY" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="cardCvv" class="form-label">CVV</label>
-                                    <input type="text" class="form-control" id="cardCvv" name="card_cvv" placeholder="XXX" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ path('cart_index') }}" class="btn btn-outline-primary">
-                                <i class="fas fa-arrow-left me-2"></i> Back to Cart
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-check me-2"></i> Place Order
-                            </button>
-                        </div>
-                        {{ form_end(form) }}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Order Summary</h5>
-                    </div>
-                    <div class="card-body">
-                        {% for id, item in cart %}
-                            <div class="d-flex justify-content-between mb-2">
-                                <div>
-                                    <span>{{ item.product.name }}</span>
-                                    <small class="text-muted d-block">Qty: {{ item.quantity }}</small>
-                                </div>
-                                <span>{{ (item.product.price * item.quantity)|number_format(3) }} TND</span>
-                            </div>
-                        {% endfor %}
-                        <hr>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Subtotal:</span>
-                            <span>{{ total|number_format(3) }} TND</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Shipping:</span>
-                            <span>
-                            {% if total >= 150 %}
-                                <span class="text-success">Free</span>
-                            {% else %}
-                                {{ 7|number_format(3) }} TND
-                            {% endif %}
-                        </span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Tax (10%):</span>
-                            <span>{{ (total * 0.1)|number_format(3) }} TND</span>
-                        </div>
-                        <hr>
-                        <div class="d-flex justify-content-between mb-3">
-                            <strong>Total:</strong>
-                            <strong class="text-primary">
-                                {% if total >= 150 %}
-                                    {{ (total + (total * 0.1))|number_format(3) }}
-                                {% else %}
-                                    {{ (total + (total * 0.1) + 7)|number_format(3) }}
-                                {% endif %} TND
-                            </strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Have a Coupon?</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="couponCode" placeholder="Coupon code">
-                            <button class="btn btn-outline-primary" type="button" onclick="applyCoupon()">Apply</button>
-                        </div>
-                    </div>
-                </div>
+        <div class="card">
+            <div class="card-body">
+                <h5>Thank you for your order!</h5>
+                <p>Order #{{ order.id }} has been successfully placed.</p>
+                <p>Total: {{ order.total|number_format(3) }} TND</p>
+                <p>Shipping Address: {{ order.shippingAddress }}</p>
+                <p>Billing Address: {{ order.billingAddress }}</p>
+                <p>Status: {{ order.status }}</p>
+                <a href="{{ path('cart_index') }}" class="btn btn-primary mt-3">Back to Cart</a>
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    <script>
-        function applyCoupon() {
-            const couponCode = document.getElementById('couponCode').value;
-            if (!couponCode.trim()) {
-                alert('Please enter a coupon code');
-                return;
-            }
-            fetch('{{ path('coupon_apply') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'code=' + encodeURIComponent(couponCode)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert(data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while applying the coupon');
-                });
-        }
-
-        document.getElementById('sameAsShipping').addEventListener('change', function() {
-            const billingFields = document.getElementById('billingFields');
-            const billingAddress = document.getElementById('{{ form.billingAddress.vars.id }}');
-            const shippingAddress = document.getElementById('{{ form.shippingAddress.vars.id }}');
-            if (this.checked) {
-                billingAddress.value = shippingAddress.value;
-                billingFields.style.display = 'none';
-            } else {
-                billingFields.style.display = 'block';
-            }
-        });
-
-        document.getElementById('paymentCredit').addEventListener('change', function() {
-            document.getElementById('creditCardFields').style.display = 'block';
-        });
-
-        document.getElementById('paymentPaypal').addEventListener('change', function() {
-            document.getElementById('creditCardFields').style.display = 'none';
-        });
-    </script>
 {% endblock %}

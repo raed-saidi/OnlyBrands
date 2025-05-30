@@ -79,10 +79,10 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="cardNumber" name="card_number" placeholder="XXXX XXXX XXXX XXXX" required>
                                     <span class="input-group-text">
-                                    <i class="fab fa-cc-visa me-1"></i>
-                                    <i class="fab fa-cc-mastercard me-1"></i>
-                                    <i class="fab fa-cc-amex"></i>
-                                </span>
+                                        <i class="fab fa-cc-visa me-1"></i>
+                                        <i class="fab fa-cc-mastercard me-1"></i>
+                                        <i class="fab fa-cc-amex"></i>
+                                    </span>
                                 </div>
                             </div>
                             <div class="row">
@@ -132,14 +132,15 @@
                         <div class="d-flex justify-content-between mb-2">
                             <span>Shipping:</span>
                             <span>
-                            {% if total >= 150 %}
-                                <span class="text-success">Free</span>
-                            {% else %}
-                                {{ 7|number_format(3) }} TND
-                            {% endif %}
-                        </span>
+                                {% if total >= 150 %}
+                                    <span class="text-success">Free</span>
+                                {% else %}
+                                    {{ 7|number_format(3) }} TND
+                                {% endif %}
+                            </span>
                         </div>
-                        <div class="d-flex justify-content-between mb-2">
+                        <div class="d-fle
+x justify-content-between mb-2">
                             <span>Tax (10%):</span>
                             <span>{{ (total * 0.1)|number_format(3) }} TND</span>
                         </div>
@@ -148,10 +149,10 @@
                             <strong>Total:</strong>
                             <strong class="text-primary">
                                 {% if total >= 150 %}
-                                    {{ (total + (total * 0.1))|number_format(3) }}
+                                    {{ (total + (total * 0.1))|number_format(3) }} TND
                                 {% else %}
-                                    {{ (total + (total * 0.1) + 7)|number_format(3) }}
-                                {% endif %} TND
+                                    {{ (total + (total * 0.1) + 7)|number_format(3) }} TND
+                                {% endif %}
                             </strong>
                         </div>
                     </div>
