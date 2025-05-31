@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity]
+#[ORM\Table(name: 'orders')]
 class Order
 {
     #[ORM\Id]
