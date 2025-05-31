@@ -6,12 +6,22 @@
     <div class="container mt-5">
         <h1><i class="fas fa-shopping-cart me-2"></i>Shopping Cart</h1>
 
+        <!-- Flash Messages -->
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
         {% if cartItems|length > 0 %}
             <div class="row">
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0">Cart Items</h5>
+                            <h5 class="mb-0">Cart Items ({{ cartItems|length }})</h5>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -30,20 +40,20 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    {% if item.product.image %}
-                                                        <img src="{{ asset('uploads/products/' ~ item.product.image) }}"
-                                                             alt="{{ item.product.name }}"
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="{{ path('product_image', {'id': item.product.id}) }}" 
+                                                             alt="{{ item.product.name }}" 
                                                              class="me-3"
-                                                             style="width: 60px; height: 60px; object-fit: cover;">
-                                                    {% else %}
-                                                        <img src="https://via.placeholder.com/60x60?text=No+Image"
-                                                             alt="No image"
-                                                             class="me-3">
-                                                    {% endif %}
+                                                             style="width: 60px; height: 60px; object-fit: cover;"
+                                                             onerror="this.src='/images/placeholder.jpg'">
+                                                    </div>
                                                     <div>
                                                         <h6 class="mb-0">{{ item.product.name }}</h6>
                                                         {% if item.product.category %}
                                                             <small class="text-muted">{{ item.product.category.name }}</small>
+                                                        {% endif %}
+                                                        {% if item.product.stock < 5 %}
+                                                            <span class="badge bg-warning text-dark">Only {{ item.product.stock }} left</span>
                                                         {% endif %}
                                                     </div>
                                                 </div>
@@ -55,15 +65,20 @@
                                                 <form action="{{ path('cart_update', {'id': item.product.id}) }}"
                                                       method="post"
                                                       class="d-inline">
-                                                    <div class="input-group" style="width: 120px;">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('cart_update_' ~ item.product.id) }}">
+                                                    <div class="input-group" style="width: 140px;">
+                                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="decreaseQuantity(this)">
+                                                            <i class="fas fa-minus"></i>
+                                                        </button>
                                                         <input type="number"
                                                                name="quantity"
                                                                value="{{ item.quantity }}"
                                                                min="1"
                                                                max="{{ item.product.stock }}"
-                                                               class="form-control form-control-sm">
-                                                        <button type="submit" class="btn btn-outline-secondary btn-sm">
-                                                            <i class="fas fa-sync"></i>
+                                                               class="form-control form-control-sm text-center"
+                                                               onchange="this.form.submit()">
+                                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="increaseQuantity(this)">
+                                                            <i class="fas fa-plus"></i>
                                                         </button>
                                                     </div>
                                                 </form>
@@ -72,7 +87,7 @@
                                                 <strong>{{ (item.product.price * item.quantity)|number_format(3) }} TND</strong>
                                             </td>
                                             <td class="align-middle">
-                                                <a href="{{ path('cart_remove', {'id': item.product.id}) }}"
+                                                <a href="{{ path('cart_remove', {'id': item.product.id, '_token': csrf_token('cart_remove_' ~ item.product.id)}) }}"
                                                    class="btn btn-outline-danger btn-sm"
                                                    onclick="return confirm('Are you sure you want to remove this item?')">
                                                     <i class="fas fa-trash"></i>
@@ -90,7 +105,7 @@
                         <a href="{{ path('product_index') }}" class="btn btn-outline-primary">
                             <i class="fas fa-arrow-left me-2"></i>Continue Shopping
                         </a>
-                        <a href="{{ path('cart_clear') }}"
+                        <a href="{{ path('cart_clear', {'_token': csrf_token('cart_clear')}) }}"
                            class="btn btn-outline-danger ms-2"
                            onclick="return confirm('Are you sure you want to clear your cart?')">
                             <i class="fas fa-trash me-2"></i>Clear Cart
@@ -124,7 +139,7 @@
                                 {% else %}
                                     {{ cartSummary.shipping|number_format(3) }} TND
                                 {% endif %}
-                            </span>
+                                </span>
                             </div>
 
                             <hr>
@@ -153,16 +168,19 @@
                                            placeholder="Enter coupon code">
                                     <button class="btn btn-outline-secondary"
                                             type="button"
+                                            id="applyCouponBtn"
                                             onclick="applyCoupon()">
-                                        Apply
+                                        <span class="btn-text">Apply</span>
+                                        <span class="spinner-border spinner-border-sm d-none" role="status"></span>
                                     </button>
                                 </div>
+                                <div id="couponMessage" class="mt-2"></div>
                             </div>
 
                             <div class="d-grid">
-                                <button class="btn btn-primary btn-lg">
+                                <a href="{{ path('checkout') }}" class="btn btn-primary btn-lg">
                                     <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -185,31 +203,90 @@
     <script>
         function applyCoupon() {
             const couponCode = document.getElementById('couponCode').value;
+            const btn = document.getElementById('applyCouponBtn');
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner-border');
+            const messageDiv = document.getElementById('couponMessage');
 
             if (!couponCode.trim()) {
-                alert('Please enter a coupon code');
+                showMessage('Please enter a coupon code', 'danger');
                 return;
             }
+
+            // Show loading state
+            btn.disabled = true;
+            btnText.textContent = 'Applying...';
+            spinner.classList.remove('d-none');
+            messageDiv.innerHTML = '';
 
             fetch('{{ path('coupon_apply') }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: 'code=' + encodeURIComponent(couponCode)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert(data.message);
-                    }
+                body: new URLSearchParams({
+                    'code': couponCode,
+                    '_token': '{{ csrf_token('coupon_apply') }}'
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while applying the coupon');
-                });
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showMessage(data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('An error occurred while applying the coupon', 'danger');
+            })
+            .finally(() => {
+                // Reset button state
+                btn.disabled = false;
+                btnText.textContent = 'Apply';
+                spinner.classList.add('d-none');
+            });
         }
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('couponMessage');
+            messageDiv.innerHTML = `<div class="alert alert-${type} alert-sm">${message}</div>`;
+        }
+
+        function increaseQuantity(btn) {
+            const input = btn.parentElement.querySelector('input[name="quantity"]');
+            const max = parseInt(input.getAttribute('max'));
+            const current = parseInt(input.value);
+            
+            if (current < max) {
+                input.value = current + 1;
+                input.form.submit();
+            }
+        }
+
+        function decreaseQuantity(btn) {
+            const input = btn.parentElement.querySelector('input[name="quantity"]');
+            const current = parseInt(input.value);
+            
+            if (current > 1) {
+                input.value = current - 1;
+                input.form.submit();
+            }
+        }
+
+        // Auto-dismiss alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert[role="alert"]');
+                alerts.forEach(alert => {
+                    if (alert.querySelector('.btn-close')) {
+                        alert.classList.remove('show');
+                        setTimeout(() => alert.remove(), 150);
+                    }
+                });
+            }, 5000);
+        });
     </script>
 {% endblock %}

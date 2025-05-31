@@ -63,9 +63,7 @@ class CheckoutController extends AbstractController
                 $orderItem = new OrderItem();
                 $orderItem->setProduct($product);
                 $orderItem->setQuantity($quantity);
-                $orderItem->setPrice($product->
-
-getPrice());
+                $orderItem->setPrice($product->getPrice());
                 $orderItem->setOrder($order);
                 $order->addItem($orderItem);
 
@@ -95,7 +93,7 @@ getPrice());
                 ]);
             }
 
-            // Paiement hors ligne (ex: PayPal or other)
+            // Paiement hors ligne (ex: à la livraison)
             $order->setStatus('paid');
             $entityManager->persist($order);
             $entityManager->flush();
@@ -116,7 +114,7 @@ getPrice());
     public function success(Order $order, CartService $cartService): Response
     {
         if ($order->getUser() !== $this->getUser()) {
-            throw $_pinpoint_the_issuecontroller->createAccessDeniedException('You are not authorized to view this order');
+            throw $this->createAccessDeniedException('You are not authorized to view this order');
         }
 
         // Nettoyage panier après paiement réussi (Stripe ou autre)

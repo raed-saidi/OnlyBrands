@@ -2,35 +2,20 @@
 
 namespace App\Service;
 
+use App\Entity\Product;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class CartService
 {
-    private RequestStack $requestStack;
-    private ProductRepository $productRepository;
-    private CouponService $couponService;
-
     public function __construct(
-        RequestStack $requestStack,
-        ProductRepository $productRepository,
-        CouponService $couponService
-    ) {
-        $this->requestStack = $requestStack;
-        $this->productRepository = $productRepository;
-        $this->couponService = $couponService;
-    }
+        private RequestStack $requestStack,
+        private ProductRepository $productRepository,
+        private CouponService $couponService,
+        private float $freeShippingThreshold = 150.0,
+        private float $shippingCost = 7.0
+    ) {}
 
-    private function getSession()
-    {
-        return $this->requestStack->getSession();
-    }
-
-    /**
-     * Returns cart items with actual Product entities and quantities
-     *
-     * @return array [ ['product' => Product, 'quantity' => int], ... ]
-     */
     public function getCart(): array
     {
         $cart = $this->getSession()->get('cart', []);
@@ -38,110 +23,83 @@ class CartService
 
         foreach ($cart as $id => $quantity) {
             $product = $this->productRepository->find($id);
-            if ($product) {
+            if ($product instanceof Product) {
                 $cartWithProducts[] = [
                     'product' => $product,
                     'quantity' => $quantity,
                 ];
+            } else {
+                $this->removeFromCart($id);
             }
         }
 
         return $cartWithProducts;
     }
 
-    /**
-     * Add a product to cart or increase quantity if already present
-     */
-    public function addToCart(int $id, int $quantity = 1): void
+    public function addToCart(int $productId, int $quantity = 1): void
     {
         $cart = $this->getSession()->get('cart', []);
-
-        if (isset($cart[$id])) {
-            $cart[$id] += $quantity;
-        } else {
-            $cart[$id] = $quantity;
-        }
-
+        $cart[$productId] = ($cart[$productId] ?? 0) + $quantity;
         $this->getSession()->set('cart', $cart);
     }
 
-    /**
-     * Update the quantity of a product in the cart (minimum 1)
-     */
-    public function updateQuantity(int $id, int $quantity): void
+    public function updateQuantity(int $productId, int $quantity): void
     {
         $cart = $this->getSession()->get('cart', []);
-        if (isset($cart[$id])) {
-            $cart[$id] = max(1, $quantity);
+        if (array_key_exists($productId, $cart)) {
+            $cart[$productId] = max(1, $quantity);
+            $this->getSession()->set('cart', $cart);
         }
+    }
+
+    public function removeFromCart(int $productId): void
+    {
+        $cart = $this->getSession()->get('cart', []);
+        unset($cart[$productId]);
         $this->getSession()->set('cart', $cart);
     }
 
-    /**
-     * Remove a product from the cart
-     */
-    public function removeFromCart(int $id): void
-    {
-        $cart = $this->getSession()->get('cart', []);
-        if (isset($cart[$id])) {
-            unset($cart[$id]);
-        }
-        $this->getSession()->set('cart', $cart);
-    }
-
-    /**
-     * Clear the whole cart and remove any applied coupon
-     */
     public function clearCart(): void
     {
         $this->getSession()->remove('cart');
         $this->couponService->removeCoupon();
     }
 
-    /**
-     * Calculate total price of the cart before shipping and discounts
-     */
-    public function getCartTotal(): float
+    public function getTotal(): float
     {
-        $total = 0;
-        foreach ($this->getCart() as $item) {
-            $total += $item['product']->getPrice() * $item['quantity'];
-        }
-        return $total;
+        return array_reduce(
+            $this->getCart(),
+            fn(float $total, array $item) => $total + ($item['product']->getPrice() * $item['quantity']),
+            0.0
+        );
     }
 
-    /**
-     * Get total quantity of all items in the cart
-     */
     public function getCartCount(): int
     {
-        $count = 0;
-        $cart = $this->getSession()->get('cart', []);
-        foreach ($cart as $quantity) {
-            $count += $quantity;
-        }
-        return $count;
+        return array_sum($this->getSession()->get('cart', []));
     }
 
-    /**
-     * Get cart summary including subtotal, shipping, discount, total, and coupon details
-     */
+    public function applyCoupon(string $code): array
+    {
+        return $this->couponService->applyCoupon($code);
+    }
+
     public function getCartSummary(): array
     {
-        $subtotal = $this->getCartTotal();
-        $appliedCoupon = $this->couponService->getAppliedCoupon();
-        $discount = $appliedCoupon ? $appliedCoupon['discount'] : 0;
-
-        $shippingCost = ($subtotal >= 150) ? 0 : 7.0;
-
-        $total = max(0, $subtotal + $shippingCost - $discount);
-
+        $subtotal = $this->getTotal();
+        $coupon = $this->couponService->getAppliedCoupon();
+        
         return [
             'subtotal' => $subtotal,
-            'shipping' => $shippingCost,
-            'discount' => $discount,
-            'total' => $total,
-            'coupon' => $appliedCoupon,
+            'shipping' => $subtotal >= $this->freeShippingThreshold ? 0.0 : $this->shippingCost,
+            'discount' => $coupon['discount'] ?? 0.0,
+            'total' => max(0, $subtotal - ($coupon['discount'] ?? 0.0)),
+            'coupon' => $coupon,
         ];
+    }
+
+    private function getSession()
+    {
+        return $this->requestStack->getSession();
     }
 }

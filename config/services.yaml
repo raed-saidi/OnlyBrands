@@ -31,6 +31,7 @@ services:
             $entityManager: '@doctrine.orm.entity_manager'
             $requestStack: '@request_stack'
 
+
     App\Service\StripeService:
         arguments:
-            $stripeSecretKey: '%stripe_secret_key%'
+            $secretKey: '%stripe_secret_key%'

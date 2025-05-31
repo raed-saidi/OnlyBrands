@@ -342,3 +342,54 @@ a {
         border-radius: 3px;
         font-size: 12px;
 }
+/* Add this to your CSS file or in a style block */
+.card-body {
+    min-height: 200px; /* Ensure minimum height */
+    padding: 1rem;
+    background-color: #fff !important; /* Force white background */
+    color: #212529 !important; /* Force dark text */
+}
+
+.card-body .d-flex {
+    margin-bottom: 0.5rem;
+    align-items: flex-start;
+    color: #212529 !important; /* Ensure text is visible */
+}
+
+.card-body .d-flex span {
+    color: #212529 !important; /* Force dark text for all spans */
+}
+
+.card-body .text-muted {
+    font-size: 0.875em;
+    color: #6c757d !important;
+}
+
+.card-body hr {
+    margin: 1rem 0;
+    border-color: #dee2e6;
+}
+
+.card-body .text-primary {
+    color: #0d6efd !important;
+    font-weight: 600;
+}
+
+.card-body .text-success {
+    color: #198754 !important;
+}
+
+/* Force visibility for all order summary elements */
+.card .card-header h5,
+.card .card-body,
+.card .card-body * {
+    color: #212529 !important; /* Dark text */
+}
+
+.card {
+    background-color: #fff !important; /* White background */
+}
+
+.card-header {
+    background-color: #f8f9fa
+}
