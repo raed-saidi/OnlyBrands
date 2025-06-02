@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
-#[ORM\Table(name: 'orders')]
+#[ORM\Table(name: 'shop_orders')] // Changed table name to avoid conflict
 class ShopOrder
 {
     #[ORM\Id]
@@ -89,7 +89,7 @@ class ShopOrder
 
     public function setTotal(float $total): self
     {
-        $this->total = $total;
+        $this->total = (string)$total; // Ensure consistency with string storage
         return $this;
     }
 

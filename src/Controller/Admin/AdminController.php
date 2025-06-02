@@ -17,8 +17,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin')]
+//#[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
     #[Route('/', name: 'admin_dashboard')]
@@ -58,6 +60,13 @@ class AdminController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Handle file upload
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $imageData = file_get_contents($imageFile->getPathname());
+                $product->setImage($imageData);
+            }
+
             $entityManager->persist($product);
             $entityManager->flush();
 
@@ -79,6 +88,13 @@ class AdminController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Handle file upload
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $imageData = file_get_contents($imageFile->getPathname());
+                $product->setImage($imageData);
+            }
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Product updated successfully!');
@@ -191,11 +207,13 @@ class AdminController extends AbstractController
     {
         $status = $request->request->get('status');
 
-        if ($status) {
+        if ($status && in_array($status, ['pending', 'pending_payment', 'paid', 'shipped', 'delivered', 'cancelled'])) {
             $order->setStatus($status);
             $entityManager->flush();
 
             $this->addFlash('success', 'Order status updated successfully!');
+        } else {
+            $this->addFlash('error', 'Invalid status provided.');
         }
 
         return $this->redirectToRoute('admin_order_show', ['id' => $order->getId()]);

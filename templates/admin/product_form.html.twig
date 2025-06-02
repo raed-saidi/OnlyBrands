@@ -1,0 +1,44 @@
+{% extends 'admin/admin_base.html.twig' %}
+{% block title %}{{ product.id ? 'Edit Product' : 'New Product' }}{% endblock %}
+
+{% block body %}
+    <h1 class="text-3xl font-bold mb-6">{{ product.id ? 'Edit Product' : 'New Product' }}</h1>
+    <div class="bg-white p-6 rounded-lg shadow">
+        {{ form_start(form) }}
+        <div class="mb-4">
+            {{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.name, {'attr': {'class': 'form-control w-full p-2 border rounded'}}) }}
+            {{ form_errors(form.name) }}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control w-full p-2 border rounded'}}) }}
+            {{ form_errors(form.description) }}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.price, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.price, {'attr': {'class': 'form-control w-full p-2 border rounded'}}) }}
+            {{ form_errors(form.price) }}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.image, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.image, {'attr': {'class': 'form-control w-full p-2 border rounded'}}) }}
+            {{ form_errors(form.image) }}
+            {% if product.id and product.image %}
+                <p class="mt-2 text-sm text-gray-600">Current image: <a href="{{ path('product_image', {'id': product.id}) }}" target="_blank">View</a></p>
+            {% endif %}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.stock, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.stock, {'attr': {'class': 'form-control w-full p-2 border rounded'}}) }}
+            {{ form_errors(form.stock) }}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.category, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.category, {'attr': {'class': 'form-control w-full p-2 border rounded'}}) }}
+            {{ form_errors(form.category) }}
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

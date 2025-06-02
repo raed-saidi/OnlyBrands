@@ -1,0 +1,16 @@
+{% extends 'admin/admin_base.html.twig' %}
+{% block title %}{{ form.vars.data.id ? 'Edit Category' : 'New Category' }}{% endblock %}
+
+{% block body %}
+    <h1 class="text-3xl font-bold mb-6">{{ form.vars.data.id ? 'Edit Category' : 'New Category' }}</h1>
+    <div class="bg-white p-6 rounded-lg shadow">
+        {{ form_start(form) }}
+        <div class="mb-4">
+            {{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.name, {'attr': {'class': 'form-control w-full p-2 border rounded'}}) }}
+            {{ form_errors(form.name) }}
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

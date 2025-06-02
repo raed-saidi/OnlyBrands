@@ -1,0 +1,53 @@
+{% extends 'admin/admin_base.html.twig' %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block body %}
+    <h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold">Total Products</h2>
+            <p class="text-3xl">{{ totalProducts }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold">Total Orders</h2>
+            <p class="text-3xl">{{ totalOrders }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold">Total Users</h2>
+            <p class="text-3xl">{{ totalUsers }}</p>
+        </div>
+    </div>
+    <h2 class="text-2xl font-semibold mb-4">Recent Orders</h2>
+    <div class="bg-white rounded-lg shadow overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+            {% for order in recentOrders %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ order.id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ order.user.email }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ order.total|number_format(2) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ order.status }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ order.createdAt|date('Y-m-d H:i') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{{ path('admin_order_show', {'id': order.id}) }}" class="text-blue-600 hover:underline">View</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">No recent orders</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\Table(name: 'products')] // Explicitly define table name
 class Product
 {
     #[ORM\Id]
@@ -26,7 +27,7 @@ class Product
     private ?string $price = null;
 
     #[ORM\Column(type: Types::BLOB, nullable: true)]
-    private $image = null;
+    private $image = null; // Changed to BLOB for binary data
 
     #[ORM\Column]
     private ?int $stock = null;
@@ -74,25 +75,25 @@ class Product
         return $this;
     }
 
-    public function getPrice(): ?float
+    public function getPrice(): ?string
     {
-        return $this->price !== null ? (float)$this->price : null;
+        return $this->price;
     }
 
-    public function setPrice(float $price): self
+    public function setPrice(string $price): self
     {
-        $this->price = (string)$price;
+        $this->price = $price;
         return $this;
     }
 
     public function getImage()
     {
-        return $this->image;
+        return $this->image; // Return raw binary data
     }
 
     public function setImage($image): self
     {
-        $this->image = $image;
+        $this->image = $image; // Accept binary data or null
         return $this;
     }
 
