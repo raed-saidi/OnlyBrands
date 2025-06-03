@@ -1,0 +1,3 @@
+# Clear Symfony cache to update service references
+php bin/console cache:clear
+

@@ -88,10 +88,21 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
             'user' => $token->getUserIdentifier(),
         ]);
 
+        // Check if the user has ROLE_ADMIN
+        $user = $token->getUser();
+        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+            $this->logger->info('Redirecting admin to dashboard', [
+                'user' => $token->getUserIdentifier(),
+            ]);
+            return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
+        }
+
+        // Check for a stored target path
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
 
+        // Default redirect for non-admins
         return new RedirectResponse($this->urlGenerator->generate('home'));
     }
 

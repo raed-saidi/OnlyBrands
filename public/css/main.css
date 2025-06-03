@@ -314,7 +314,7 @@ a {
         overflow: hidden;
         border-bottom: 1px solid #eee;
 }
-    
+
 .product-overlay {
         position: absolute;
         top: 0;
@@ -328,11 +328,11 @@ a {
         opacity: 0;
         transition: opacity 0.3s ease;
 }
-    
+
 .product-img-container:hover .product-overlay {
         opacity: 1;
 }
-    
+
 .product-badge {
         position: absolute;
         top: 10px;
